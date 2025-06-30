@@ -230,15 +230,16 @@
     <input id="aiUserInput" placeholder="Ask me anything..." required />
     <button type="submit">Ask</button>
   </form>
-  <div id="aiReply"></div> style="margin-top:1rem;"></div>
+  <div id="aiReply" style="margin-top:1rem;"></div>
 </div>
 <script src="ai.js"></script>
-  <script>
-  const sendBtn = document.getElementById("sendBtn");
+ <script>
+  const aiForm = document.getElementById("aiForm");
   const input = document.getElementById("aiUserInput");
   const replyBox = document.getElementById("aiReply");
 
-  sendBtn.addEventListener("click", async () => {
+  aiForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
     const message = input.value.trim();
     if (!message) return;
 
@@ -252,9 +253,9 @@
       });
 
       const data = await res.json();
-      replyBox.innerText = data.reply;
+      replyBox.innerText = data.reply || "No response.";
     } catch (err) {
-      replyBox.innerText = "Something went wrong 😓";
+      replyBox.innerText = "❌ Error: Something went wrong.";
       console.error(err);
     }
   });
