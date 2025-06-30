@@ -150,38 +150,6 @@
     const form = document.getElementById("workoutForm");
     const table = document.getElementById("workoutTable");
 
-    // Load workouts on page load
-    window.onload = async () => {
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark");
-      }
-      try {
-        const snapshot = await db.collection("workouts").get();
-        snapshot.forEach(doc => addRow(doc.data()));
-      } catch (err) {
-        console.error("Error loading workouts:", err);
-      }
-    };
-
-    // Add new workout
-    form.onsubmit = async e => {
-      e.preventDefault();
-      const workout = {
-        date: form.date.value,
-        time: form.time.value,
-        duration: form.duration.value,
-        sets: form.sets.value,
-        type: form.type.value
-      };
-      try {
-        await db.collection("workouts").add(workout);
-        addRow(workout);
-        form.reset();
-      } catch (err) {
-        console.error("Error saving workout:", err);
-      }
-    };
-
     function addRow({ date, time, duration, sets, type }) {
       const row = table.insertRow();
       const imgCell = row.insertCell();
@@ -196,6 +164,37 @@
       row.insertCell().textContent = sets;
       row.insertCell().textContent = type;
     }
+
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const workout = {
+        date: form.date.value,
+        time: form.time.value,
+        duration: form.duration.value,
+        sets: form.sets.value,
+        type: form.type.value
+      };
+      try {
+        await db.collection("workouts").add(workout);
+        addRow(workout);
+        form.reset(
+        );
+      } catch (err) {
+        console.error("Error saving workout:", err);
+      }
+    };
+
+    window.onload = async () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+      try {
+        const snapshot = await db.collection("workouts").get();
+        snapshot.forEach(doc => addRow(doc.data()));
+      } catch (err) {
+        console.error("Error loading workouts:", err);
+      }
+    };
 
     function toggleTheme() {
       document.body.classList.toggle("dark");
