@@ -1,0 +1,15 @@
+{
+  "name": "Yash's AI Workout Planner",
+  "short_name": "WorkoutPlanner",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1f1c2c",
+  "theme_color": "#ff6b6b",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/emoji/96/dumbbell.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ]
+}
