@@ -205,6 +205,17 @@
     function clearWorkouts() {
       alert("To delete synced workouts, open Firebase Console → Firestore → manually remove entries.");
     }
+    window.onload = async () => {
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+  }
+  try {
+    const snapshot = await db.collection("workouts").get();
+    snapshot.forEach(doc => addRow(doc.data()));
+  } catch (err) {
+    console.error("Error loading workouts:", err);
+  }
+};
   </script>
 </body>
 </html>
