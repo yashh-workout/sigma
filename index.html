@@ -110,7 +110,8 @@
       <button class="add-btn" type="submit">Add</button>
       <button class="clear-btn" type="button" onclick="clearWorkouts()">Clear All</button>
     </form>
-        <table>
+
+    <table>
       <thead>
         <tr>
           <th>🖼️</th>
@@ -126,7 +127,6 @@
   </div>
 
   <script>
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDnYYLm8GmAtPxDho61j-5UeFdBb5KdqpY",
       authDomain: "yash-workout.firebaseapp.com",
@@ -150,7 +150,6 @@
     const form = document.getElementById("workoutForm");
     const table = document.getElementById("workoutTable");
 
-    // Load workouts from Firestore
     window.onload = async () => {
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
@@ -159,7 +158,6 @@
       snapshot.forEach(doc => addRow(doc.data()));
     };
 
-    // Add workout to Firestore
     form.onsubmit = async e => {
       e.preventDefault();
       const workout = {
@@ -171,4 +169,33 @@
       };
       await db.collection("workouts").add(workout);
       addRow(workout);
-      form
+      form.reset();
+    };
+
+    function addRow({ date, time, duration, sets, type }) {
+      const row = table.insertRow();
+      const imgCell = row.insertCell();
+      const img = document.createElement("img");
+      img.src = icons[type] || "";
+      img.className = "icon";
+      img.alt = type;
+      imgCell.appendChild(img);
+      row.insertCell().textContent = date;
+      row.insertCell().textContent = time;
+      row.insertCell().textContent = duration;
+      row.insertCell().textContent = sets;
+      row.insertCell().textContent = type;
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    }
+
+    function clearWorkouts() {
+      alert("To delete synced workouts, open Firebase Console → Firestore → manually remove entries.");
+    }
+  </script>
+</body>
+</html>
