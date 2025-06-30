@@ -224,5 +224,14 @@
       .catch(err => console.error("Service Worker Failed:", err));
   }
 </script>
+  <div id="aiPanel" style="margin-top:2rem;">
+  <h3>🤖 AI Assistant</h3>
+  <form id="aiForm">
+    <input id="aiInput" placeholder="Ask me anything..." required />
+    <button type="submit">Ask</button>
+  </form>
+  <div id="aiChat" style="margin-top:1rem;"></div>
+</div>
+<script src="ai.js"></script>
 </body>
 </html>
