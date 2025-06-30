@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Yash's Cloud Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f0f0;
+      color: #222;
+      padding: 2rem;
+      margin: 0;
+      transition: 0.3s ease background;
+    }
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    }
+    body.dark .container {
+      background: #1e1e1e;
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 14px;
+      background: #222;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 0.4rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .add-btn {
+      background: #ff7e67;
+      color: white;
+    }
+    .clear-btn {
+      background: #999;
+      color: white;
+    }
+    table {
+      width: 100%;
+      margin-top: 2rem;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 0.8rem;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #ff7e67;
+      color: white;
+    }
+    .icon {
+      width: 50px;
+      height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+  <div class="container">
+    <h1>🔥 Yash's Cloud Workout Tracker</h1>
+    <form id="workoutForm">
+      <label>Date</label>
+      <input type="date" id="date" required>
+      <label>Time</label>
+      <input type="time" id="time" required>
+      <label>Duration (mins)</label>
+      <input type="number" id="duration" required>
+      <label>Sets</label>
+      <input type="number" id="sets" required>
+      <label>Type</label>
+      <select id="type" required>
+        <option value="" disabled selected>Select</option>
+        <option>Cardio</option>
+        <option>Strength</option>
+        <option>HIIT</option>
+        <option>Flexibility</option>
+        <option>Core</option>
+      </select>
+      <button class="add-btn" type="submit">Add</button>
+      <button class="clear-btn" type="button" onclick="clearWorkouts()">Clear All</button>
+    </form>
+        <table>
+      <thead>
+        <tr>
+          <th>🖼️</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Duration</th>
+          <th>Sets</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody id="workoutTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDnYYLm8GmAtPxDho61j-5UeFdBb5KdqpY",
+      authDomain: "yash-workout.firebaseapp.com",
+      projectId: "yash-workout",
+      storageBucket: "yash-workout.firebasestorage.app",
+      messagingSenderId: "1056212799956",
+      appId: "1:1056212799956:web:356d34d529e4aba14d4641"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const icons = {
+      Cardio: "https://img.icons8.com/color/64/running.png",
+      Strength: "https://img.icons8.com/color/64/dumbbell.png",
+      HIIT: "https://img.icons8.com/color/64/interval-training.png",
+      Flexibility: "https://img.icons8.com/color/64/yoga.png",
+      Core: "https://img.icons8.com/color/64/abs.png"
+    };
+
+    const form = document.getElementById("workoutForm");
+    const table = document.getElementById("workoutTable");
+
+    // Load workouts from Firestore
+    window.onload = async () => {
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+      }
+      const snapshot = await db.collection("workouts").get();
+      snapshot.forEach(doc => addRow(doc.data()));
+    };
+
+    // Add workout to Firestore
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const workout = {
+        date: form.date.value,
+        time: form.time.value,
+        duration: form.duration.value,
+        sets: form.sets.value,
+        type: form.type.value
+      };
+      await db.collection("workouts").add(workout);
+      addRow(workout);
+      form
