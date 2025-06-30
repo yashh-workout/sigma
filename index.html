@@ -150,14 +150,20 @@
     const form = document.getElementById("workoutForm");
     const table = document.getElementById("workoutTable");
 
+    // Load workouts on page load
     window.onload = async () => {
       if (localStorage.getItem("theme") === "dark") {
         document.body.classList.add("dark");
       }
-      const snapshot = await db.collection("workouts").get();
-      snapshot.forEach(doc => addRow(doc.data()));
+      try {
+        const snapshot = await db.collection("workouts").get();
+        snapshot.forEach(doc => addRow(doc.data()));
+      } catch (err) {
+        console.error("Error loading workouts:", err);
+      }
     };
 
+    // Add new workout
     form.onsubmit = async e => {
       e.preventDefault();
       const workout = {
@@ -167,9 +173,13 @@
         sets: form.sets.value,
         type: form.type.value
       };
-      await db.collection("workouts").add(workout);
-      addRow(workout);
-      form.reset();
+      try {
+        await db.collection("workouts").add(workout);
+        addRow(workout);
+        form.reset();
+      } catch (err) {
+        console.error("Error saving workout:", err);
+      }
     };
 
     function addRow({ date, time, duration, sets, type }) {
